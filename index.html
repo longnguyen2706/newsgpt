@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>📰 NewsGPT </title>
+    <style>
+      body {
+        background-color: #F8F8FF;
+        padding: 20px 50px;
+      }
+      
+      header {
+        background-color: #333333;
+        color: #FFFFFF;
+        padding: 40px;
+        text-align: center;
+        font-size: 36px;
+        font-weight: bold;
+        margin-bottom: 40px;
+      }
+      
+      form {
+        background-color: #FFFFFF;
+        padding: 40px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
+      }
+      
+      label {
+        color: #333333;
+        font-weight: bold;
+        font-size: 20px;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+      
+      select {
+        width: 100%;
+        height: auto;
+        padding: 10px;
+        margin-bottom: 25px;
+        border-radius: 5px;
+        border: 1px solid #CCCCCC;
+        background-color: #F8F8FF;
+        color: #333333;
+        font-size: 16px;
+      }
+      
+      input[type="submit"] {
+        background-color: #333333;
+        color: #FFFFFF;
+        padding: 10px 20px;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        font-size: 20px;
+      }
+      
+      textarea {
+        width: 100%;
+        height: 200px; /* increase the height to 200px */
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #CCCCCC;
+        background-color: #FFFFFF;
+        color: #333333;
+        font-size: 16px;
+        resize: vertical; /* allow vertical resizing */
+      }
+    </style>
+  </head>
+  <body>
+    <header>📰 NewsGPT</header>
+    <form onsubmit="submitForm(event)">
+      <label for="category">Category:</label>
+      <select id="category" name="category" multiple size="5">
+        <option value="all">All</option>
+        <option value="politics">Politics</option>
+        <option value="business">Business</option>
+        <option value="sports">Sports</option>
+        <option value="entertainment">Entertainment</option>
+      </select>
+      <label for="region">Region:</label>
+      <select id="region" name="region" multiple size="4">
+        <option value="all">All</option>
+        <option value="asia">Asia</option>
+        <option value="europe">Europe</option>
+        <option value="america">America</option>
+      </select>
+      <label for="length">Length:</label>
+      <select id="length" name="length" multiple size="3">
+        <option value="short">Short</option>
+        <option value="medium">Medium</option>
+        <option value="long">Long</option>
+      </select>
+      <input type="submit" value="Submit">
+    </form>
+    <br><br>
+    <label for="output">Summarized News Headlines</label>
+    <textarea id="output" name="output" rows="4" cols="100"></textarea>
+  </body>
+</html>
+<script>
+    function submitForm(event) {
+      event.preventDefault();
+      const category = document.getElementById("category").value;
+      const region = document.getElementById("region").value;
+      const length = document.getElementById("length").value;
+      const data = JSON.stringify({category, region, length});
+      fetch('/endpoint', {
+        method: 'POST',
+        body: data,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById("output").value = data.headlines;
+      })
+      .catch(error => console.error(error));
+    }
+</script>
