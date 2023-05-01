@@ -10,6 +10,11 @@ cloud function implementation for newsgpt site
 
 # Run server locally
 
+install requirements
+```bash
+pip install -r requirements.txt
+```
+
 ```bash
 # terminal 1
 azurite

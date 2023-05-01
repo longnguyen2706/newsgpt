@@ -10,6 +10,10 @@ import os
 import time
 import json
 from newsgpt import NewsGPT
+from azure.cosmos import exceptions, CosmosClient, PartitionKey
+
+# cosmos db impl
+# https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/cosmos/azure-cosmos/samples/examples.py
 
 app = func.FunctionApp()
 
@@ -71,7 +75,8 @@ def submit_news_form(
 
 # TODO: this isnt working, dunno why need further debugging
 @app.function_name(name="mytimer")
-@app.schedule(schedule="0 */5 * * * *", 
+@app.schedule(# cron 30 secs 
+              schedule="*/30 * * * * *",
               arg_name="mytimer",
               run_on_startup=True) 
 def test_function(mytimer: func.TimerRequest) -> None:
