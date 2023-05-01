@@ -73,23 +73,23 @@ def submit_news_form(
 # https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer?tabs=python-v2%2Cin-process&pivots=programming-language-python
 
 
-# TODO: this isnt working, dunno why need further debugging
-@app.function_name(name="mytimer")
-@app.schedule(# cron 30 secs 
-              schedule="*/30 * * * * *",
-              arg_name="mytimer",
-              run_on_startup=True) 
-def test_function(mytimer: func.TimerRequest) -> None:
-    logging.info('Python timer trigger function')
-    # TODO: update the database from langchain
-    _api_key = "700fa82411ad46069807d49abd48c7ad"
-    _api_base = "https://newsgpt.openai.azure.com/"
-    _api_type = 'azure'
-    _api_version = '2022-12-01'
-    _model_name = "text-davinci-003"
+# # TODO: this isnt working, dunno why need further debugging
+# @app.function_name(name="mytimer")
+# @app.schedule(# cron 30 secs 
+#               schedule="*/30 * * * * *",
+#               arg_name="mytimer",
+#               run_on_startup=True) 
+# def test_function(mytimer: func.TimerRequest) -> None:
+#     logging.info('Python timer trigger function')
+#     # TODO: update the database from langchain
+#     _api_key = "700fa82411ad46069807d49abd48c7ad"
+#     _api_base = "https://newsgpt.openai.azure.com/"
+#     _api_type = 'azure'
+#     _api_version = '2022-12-01'
+#     _model_name = "text-davinci-003"
 
-    newsgpt = NewsGPT(api_key=_api_key,
-                      api_type=_api_type,
-                      api_base=_api_base,
-                      api_version=_api_version,
-                      model_name=_model_name)
+#     newsgpt = NewsGPT(api_key=_api_key,
+#                       api_type=_api_type,
+#                       api_base=_api_base,
+#                       api_version=_api_version,
+#                       model_name=_model_name)

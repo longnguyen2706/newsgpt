@@ -5,3 +5,5 @@
 azure-functions
 azure-cosmos
 langchain
+openai
+typing
