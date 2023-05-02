@@ -41,5 +41,5 @@ Lastly deploy the function to the cloud with the following command:
 az functionapp config appsettings set --name newsgpt-ai --resource-group newsgpt --settings AzureWebJobsFeatureFlags=EnableWorkerIndexing
 
 # then deploy
-func azure functionapp publish  newsgpt-ai
+func azure functionapp publish newsgpt-ai
 ```

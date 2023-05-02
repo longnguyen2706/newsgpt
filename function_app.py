@@ -9,8 +9,11 @@ import logging
 import os
 import time
 import json
-from newsgpt import NewsGPT
+from lib.summarydb import SummaryDB
+
+from lib.newsgpt import NewsGPT, NewsCategory, NewsLength
 from azure.cosmos import exceptions, CosmosClient, PartitionKey
+from populate_db import populate_db
 
 # cosmos db impl
 # https://github.com/Azure/azure-sdk-for-python/blob/main/sdk/cosmos/azure-cosmos/samples/examples.py
@@ -23,8 +26,11 @@ app = func.FunctionApp()
 @app.function_name(name="get_last_update")
 @app.route(route="last_update", auth_level=func.AuthLevel.ANONYMOUS)
 def get_last_update(req: func.HttpRequest) -> func.HttpResponse:
-    time_now_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    # TODO: get this last update time from the database
+    db = SummaryDB()
+    ts = db.query_overall_latest_summary()['_ts']
+    # timestamp to datetime string
+    time_now_str = datetime.datetime.fromtimestamp(ts).strftime(
+        "%Y-%m-%d %H:%M:%S")
     return func.HttpResponse(time_now_str)
 
 ##############################################################################
@@ -51,11 +57,22 @@ def submit_news_form(
     json_res = {"verbose": "Got response from the request."}
 
     if req_body:
-        json_res["headlines"] = \
-            f" Getting headlines for {req_body['category']}, {req_body['region']}, {req_body['length']} \n " \
-            f" HA, I am still a work in progress."
+        db = SummaryDB()
+        cat = req_body['category']
+        len = req_body['length']
+        
+        len_map = {
+            'short': NewsLength.SHORT,
+            'medium': NewsLength.MEDIUM,
+            'long': NewsLength.LONG
+        }
 
-        # TODO: get the headlines from the database
+        s = db.query_latest_summary(cat, len_map[len])
+        summary = s["summary"]
+
+        json_res["headlines"] = \
+            f"Getting headlines for {cat}, with {len} length: \n" \
+            f"{summary}"
 
         return func.HttpResponse(
             body=json.dumps(json_res),
@@ -75,21 +92,15 @@ def submit_news_form(
 
 # # TODO: this isnt working, dunno why need further debugging
 # @app.function_name(name="mytimer")
-# @app.schedule(# cron 30 secs 
-#               schedule="*/30 * * * * *",
+# @app.schedule(# cron with 6 fields, for every 10 minutes
+#               schedule="0 */10 * * * *",
+              
+#             #   # cron with 6 fields, for every day at 12:00 AM
+#             #   schedule="0 0 0 * * *",
+
 #               arg_name="mytimer",
-#               run_on_startup=True) 
+#               run_on_startup=False) 
 # def test_function(mytimer: func.TimerRequest) -> None:
 #     logging.info('Python timer trigger function')
 #     # TODO: update the database from langchain
-#     _api_key = "700fa82411ad46069807d49abd48c7ad"
-#     _api_base = "https://newsgpt.openai.azure.com/"
-#     _api_type = 'azure'
-#     _api_version = '2022-12-01'
-#     _model_name = "text-davinci-003"
-
-#     newsgpt = NewsGPT(api_key=_api_key,
-#                       api_type=_api_type,
-#                       api_base=_api_base,
-#                       api_version=_api_version,
-#                       model_name=_model_name)
+#     populate_db()

@@ -7,3 +7,5 @@ azure-cosmos
 langchain
 openai
 typing
+selenium
+unstructured

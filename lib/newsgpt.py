@@ -88,12 +88,12 @@ class NewsGPT:
         print(len(docs))
         print(type(docs[0]))
 
-        # This tries to truncate the page content to 3000 characters
+        # This tries to truncate the page content to char_limit characters
         for d in docs:
             l = len(d.page_content)
             print(l)
             if l > chars_limit:
-                d.page_content = d.page_content[:3000]
+                d.page_content = d.page_content[:chars_limit]
 
         print(" size after truncation of docs")
         for d in docs:
@@ -102,14 +102,13 @@ class NewsGPT:
         print(f"Time taken to load {len(docs)} docs: {time.time() - start}")
         return docs
 
-    def summarize(
-                self,
-                news_category: NewsCategory,
-                news_length: NewsLength
-            ) -> str:
+    def summarize_docs(
+            self,
+            docs: List[Document],
+            news_category: NewsCategory,
+            news_length: NewsLength
+        ):
         DEBUG = False
-        
-        docs = self.get_news(category=news_category)
         start = time.time()
 
         map_prompt_template = f"Write a {news_category} news headlines summary of the following:"
@@ -135,8 +134,16 @@ class NewsGPT:
                 self.llm, chain_type="map_reduce", map_prompt=MAP_PROMPT,
                 combine_prompt=REDUCE_PROMPT)
             summary = chain.run(docs)
-        print(f"Time taken to summarize {len(docs)} docs: {time.time() - start}")
+        print(f"Time taken to summarize {len(docs)} docs: {time.time() - start}")        
         return summary
+
+    def summarize(
+                self,
+                news_category: NewsCategory,
+                news_length: NewsLength
+            ) -> str:
+        docs = self.get_news(category=news_category)
+        return self.summarize_docs(docs, news_category, news_length)
 
 
 ##############################################################################
