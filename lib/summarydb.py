@@ -103,6 +103,8 @@ class SummaryDB:
             return None
 
 
+##############################################################################
+
 if '__main__' == __name__:
     summary_db = SummaryDB()
 

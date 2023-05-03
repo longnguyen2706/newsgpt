@@ -36,7 +36,8 @@ class NewsGPT:
                  api_type: str,
                  api_base: str,
                  api_version: str,
-                 model_name: str
+                 model_name: str,
+                 max_tokens: int = 1000
                  ):
         os.environ["OPENAI_API_KEY"] = api_key
         os.environ["OPENAI_API_TYPE"] = api_type
@@ -50,7 +51,7 @@ class NewsGPT:
         self.llm = AzureOpenAI(
             deployment_name=model_name,
             model_name=model_name,
-            max_tokens=1000)  # default is 16 in openai API
+            max_tokens=max_tokens)  # default is 16 in openai API
         print("Done Initializing NewsGPT")
 
     def get_urls(
@@ -106,9 +107,16 @@ class NewsGPT:
             self,
             docs: List[Document],
             news_category: NewsCategory,
-            news_length: NewsLength
+            news_length: NewsLength,
+            single_doc: bool = False,
         ):
-        DEBUG = False
+        """
+        Summarize the given list of documents
+        if single_doc is False: use map-reduce summarization
+        else:                   use single doc summarization
+        """
+        print("Summarizing docs")
+        MAP_REDUCE_DEBUG = False
         start = time.time()
 
         map_prompt_template = f"Write a {news_category} news headlines summary of the following:"
@@ -122,7 +130,12 @@ class NewsGPT:
         MAP_PROMPT = PromptTemplate(template=map_prompt_template, input_variables=["text"])
         REDUCE_PROMPT = PromptTemplate(template=map_prompt_template, input_variables=["text"])
 
-        if DEBUG:
+        if single_doc:
+            chain = load_summarize_chain(self.llm, chain_type="stuff", prompt=REDUCE_PROMPT)
+            summary = chain.run(docs)
+
+        # use map-reduce summarization
+        elif MAP_REDUCE_DEBUG:
             chain = load_summarize_chain(self.llm,
                                          chain_type="map_reduce",
                                          map_prompt=MAP_PROMPT,
@@ -134,6 +147,7 @@ class NewsGPT:
                 self.llm, chain_type="map_reduce", map_prompt=MAP_PROMPT,
                 combine_prompt=REDUCE_PROMPT)
             summary = chain.run(docs)
+
         print(f"Time taken to summarize {len(docs)} docs: {time.time() - start}")        
         return summary
 

@@ -12,6 +12,8 @@ import json
 from lib.summarydb import SummaryDB
 
 from lib.newsgpt import NewsGPT, NewsCategory, NewsLength
+from lib.news_scrapper import get_content, get_news
+
 from azure.cosmos import exceptions, CosmosClient, PartitionKey
 from populate_db import populate_db
 
@@ -28,10 +30,7 @@ app = func.FunctionApp()
 def get_last_update(req: func.HttpRequest) -> func.HttpResponse:
     db = SummaryDB()
     ts = db.query_overall_latest_summary()['_ts']
-    # timestamp to datetime string
-    time_now_str = datetime.datetime.fromtimestamp(ts).strftime(
-        "%Y-%m-%d %H:%M:%S")
-    return func.HttpResponse(time_now_str)
+    return func.HttpResponse(str(ts))
 
 ##############################################################################
 
@@ -90,17 +89,18 @@ def submit_news_form(
 # https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer?tabs=python-v2%2Cin-process&pivots=programming-language-python
 
 
-# # TODO: this isnt working, dunno why need further debugging
-# @app.function_name(name="mytimer")
-# @app.schedule(# cron with 6 fields, for every 10 minutes
-#               schedule="0 */10 * * * *",
+# TODO: this isnt working, dunno why need further debugging
+@app.function_name(name="mytimer")
+@app.schedule(# cron with 6 fields, for every 10 minutes
+              schedule="0 */10 * * * *",
               
-#             #   # cron with 6 fields, for every day at 12:00 AM
-#             #   schedule="0 0 0 * * *",
+              # cron with 6 fields, for every hour
+            #   schedule="0 0 * * * *",
 
-#               arg_name="mytimer",
-#               run_on_startup=False) 
-# def test_function(mytimer: func.TimerRequest) -> None:
-#     logging.info('Python timer trigger function')
-#     # TODO: update the database from langchain
-#     populate_db()
+              arg_name="mytimer",
+              run_on_startup=False) 
+def test_function(mytimer: func.TimerRequest) -> None:
+    logging.info('Python timer trigger function')
+    
+    # seleluim is not working on azure function
+    populate_db(use_seleluim=False)

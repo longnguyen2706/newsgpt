@@ -154,7 +154,10 @@
         .then(data => {
           // Update HTML with latest update data
           console.log(data);
-          document.getElementById('last-update-time').innerHTML = data;
+          // js timestamp is in milliseconds, so multiply by 1000
+          const date = new Date(parseInt(data)*1000);
+          const currentDateTime = date.toLocaleString();
+          document.getElementById('last-update-time').innerHTML = currentDateTime;
         })
         .catch(error => console.error(error));
     }

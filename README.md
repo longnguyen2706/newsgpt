@@ -43,3 +43,6 @@ az functionapp config appsettings set --name newsgpt-ai --resource-group newsgpt
 # then deploy
 func azure functionapp publish newsgpt-ai
 ```
+
+## Notes:
+ - Selenium is not supported in Azure functions, due to the use of webdriver chrome.
