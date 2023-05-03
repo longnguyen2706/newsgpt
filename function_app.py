@@ -27,11 +27,10 @@ app = func.FunctionApp()
 @app.route(route="last_update", auth_level=func.AuthLevel.ANONYMOUS)
 def get_last_update(req: func.HttpRequest) -> func.HttpResponse:
     db = SummaryDB()
-    ts = db.query_overall_latest_summary()['_ts']
-    # timestamp to datetime string
-    time_now_str = datetime.datetime.fromtimestamp(ts).strftime(
-        "%Y-%m-%d %H:%M:%S")
-    return func.HttpResponse(time_now_str)
+    timestamp_s = db.query_overall_latest_summary()['_ts']
+    print("db time: ", timestamp_s)
+    # return timestamp in seconds
+    return func.HttpResponse(str(timestamp_s))
 
 ##############################################################################
 
@@ -40,6 +39,7 @@ def get_last_update(req: func.HttpRequest) -> func.HttpResponse:
 @app.route(route="index", auth_level=func.AuthLevel.ANONYMOUS)
 def get_static(req: func.HttpRequest) -> func.HttpResponse:
     f = open(os.path.dirname(os.path.realpath(__file__)) + '/index/index.html')
+    print("-------------------------index")
     return func.HttpResponse(f.read(), mimetype='text/html')
 
 ##############################################################################
