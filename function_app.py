@@ -89,13 +89,17 @@ def submit_news_form(
 # https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-timer?tabs=python-v2%2Cin-process&pivots=programming-language-python
 
 
-# TODO: this isnt working, dunno why need further debugging
+# NOTE: local test with `func start` does not work with cron job 
+# that is more than 1 min, dunno why
 @app.function_name(name="mytimer")
 @app.schedule(# cron with 6 fields, for every 10 minutes
-              schedule="0 */10 * * * *",
+            #   schedule="0 */10 * * * *",
               
               # cron with 6 fields, for every hour
-            #   schedule="0 0 * * * *",
+              schedule="0 0 * * * *",
+
+            # cron with 6 fields, for every 2 hours
+            #   schedule="0 0 */2 * * *",
 
               arg_name="mytimer",
               run_on_startup=False) 

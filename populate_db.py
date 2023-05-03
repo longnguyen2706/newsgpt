@@ -33,7 +33,7 @@ def populate_db(use_seleluim=False):
             docs = newsgpt.get_news(category=cat)
         else:
             urls = get_news(NewsCategory.ALL)
-            c = get_content(urls, NewsCategory.SPORTS)
+            c = get_content(urls, cat)
             docs = [Document(page_content=c)]
 
         for news_len in [
