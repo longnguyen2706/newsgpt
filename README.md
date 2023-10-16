@@ -1,6 +1,7 @@
 # newsgpt
-cloud function implementation for newsgpt site: https://news-gpt.azurewebsites.net/
+The project aims to aggregate news from common sources and give user summaries based on their setting.
 
+Website (on azure cloud): https://news-gpt.azurewebsites.net/
 
 Architecture overview:
 ```mermaid
